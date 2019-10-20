@@ -9,3 +9,5 @@ terraform/**/plugins/*
 
 *.tfstate
 *.tfstate.backup
+
+.aws_shared_layer
