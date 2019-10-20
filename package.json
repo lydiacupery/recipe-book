@@ -5,16 +5,26 @@
   "dependencies": {
     "react": "^16.10.2",
     "react-dom": "^16.10.2",
-    "react-scripts": "3.2.0"
+    "react-scripts": "3.2.0",
+    "typescript": "^3.5.0"
+  },
+  "devDependencies": {
+    "circular-dependency-plugin": "^5.2.0",
+    "happypack": "^5.0.1",
+    "webpack-bundle-analyzer": "^3.0.4",
+    "webpack-cli": "^3.2.3",
+    "webpack-dev-server": "^3.1.14",
+    "webpack-node-externals": "^1.7.2",
+    "ts-loader": "^6",
+    "webpack-split-by-path": "^2.0.0"
   },
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
-  },
-  "eslintConfig": {
-    "extends": "react-app"
+    "eject": "react-scripts eject",
+    "push-to-s3": "yarn build && aws s3 sync ./build s3://wild-rides-lydia --region us-east-1",
+    "build:server": "webpack --config ./webpack/server.config.js"
   },
   "browserslist": {
     "production": [

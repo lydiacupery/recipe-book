@@ -1,3 +1,11 @@
 build/
+dist/
 
 node_modules/
+
+terraform.tfvars
+
+terraform/**/plugins/*
+
+*.tfstate
+*.tfstate.backup
