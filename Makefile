@@ -1,5 +1,5 @@
-# dist/lambda/*.js: server/lambda.ts
-# 	yarn build:server
+dist/lambda/*.js: package.json yarn.lock modules/server/lambda.ts
+	yarn build:server
 
 # Bundle Lambda contents into a zip for publication
 # dist/deploy/lambda/%.zip: dist/lambda/%.js
@@ -9,8 +9,17 @@ deployment_key := fus-tf-lydia-recipe-book-endpoint.zip
 lambda_location := dist/deploy/lambda/lambda.zip
 lambda_function_name := rec-tf-recipe-endpoint
 
+all: $(lambda_location) dist/deploy/shared-node-runtime.zip dist/shared-node-runtime/nodejs/node_modules 
+.PHONY: all
 
+all_lambda: upload_lambda deploy_lambda publish_layer
+.PHONY: all_lambda
+
+$(lambda_location): dist/lambda/lambda.js
+	zip -Xj $@ $<
+	
 #shared lambda layer
+# Build the Lambda layer by bundling node_modules into a zip
 dist/deploy/shared-node-runtime.zip: dist/shared-node-runtime/nodejs/node_modules | dist/deploy
 	cd dist/shared-node-runtime; \
 	zip -Xr ../deploy/shared-node-runtime.zip *
@@ -20,6 +29,7 @@ dist/shared-node-runtime/nodejs/node_modules: package.json yarn.lock | dist/shar
 	cd dist/shared-node-runtime/nodejs; \
 	yarn install --production=true; \
 	rm package.json yarn.lock
+
 
 .PHONY: publish_layer
 publish_layer:
@@ -33,14 +43,12 @@ publish_layer:
 	if [ -s .aws_shared_layer ]; then exit 0; else exit 1; fi
 
 
-# Build the Lambda layer by bundling node_modules into a zip
-$(lambda_location): dist/lambda/lambda.js
-	zip -Xj $@ $<
+
 
 # upload lambda
 .PHONY: upload_lambda
 upload_lambda: 
-	aws s3 cp $(lambda_location) "s3://$(deployment_bucket)/$(deployment_key)"
+	aws s3 cp $(lambda_location) "s3://$(deployment_bucket)/$(deployment_key)" 
 
 .PHONY: deploy_lambda
 deploy_lambda:

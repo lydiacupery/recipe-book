@@ -3,7 +3,6 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "aws-serverless-express": "^3.3.6",
     "react": "^16.10.2",
     "react-dom": "^16.10.2",
     "react-scripts": "3.2.0",
@@ -12,11 +11,10 @@
   "devDependencies": {
     "circular-dependency-plugin": "^5.2.0",
     "happypack": "^5.0.1",
-    "ts-loader": "^6",
     "webpack-bundle-analyzer": "^3.0.4",
     "webpack-cli": "^3.2.3",
-    "webpack-dev-server": "^3.1.14",
     "webpack-node-externals": "^1.7.2",
+    "ts-loader": "^6",
     "webpack-split-by-path": "^2.0.0"
   },
   "scripts": {
@@ -24,8 +22,7 @@
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "deploy-client-to-s3": "yarn build && aws s3 sync ./build s3://wild-rides-lydia --region us-east-1",
-    "build:server": "webpack --config ./webpack/server.config.js"
+    "deploy-client-to-s3": "yarn build && aws s3 sync ./build s3://wild-rides-lydia --region us-east-1"
   },
   "browserslist": {
     "production": [
