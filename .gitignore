@@ -13,3 +13,5 @@ terraform/**/plugins/*
 .aws_shared_layer
 
 .env
+
+aws-exports.js

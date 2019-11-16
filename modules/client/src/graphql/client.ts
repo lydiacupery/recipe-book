@@ -1,4 +1,8 @@
-import { InMemoryCache, NormalizedCacheObject } from "apollo-cache-inmemory";
+import { Auth } from "aws-amplify";
+// tslint:disable-next-line: ordered-imports
+import { createHttpLink } from 'apollo-link-http';
+// tslint:disable-next-line: ordered-imports
+import { NormalizedCacheObject ,InMemoryCache,} from "apollo-cache-inmemory";
 import ApolloClient from "apollo-client";
 import { ApolloLink } from "apollo-link";
 import { BatchHttpLink } from "apollo-link-batch-http";
@@ -7,13 +11,16 @@ import { History } from "history";
 // import { ClientSideResolvers } from "./resolvers";
 // import { DEFAULTS } from "./client-state";
 import { compact } from "lodash-es";
-import { setContext } from 'apollo-link-context';
-import { Auth } from "aws-amplify";
-import { createHttpLink } from 'apollo-link-http';
+// tslint:disable-next-line:ordered-imports
 import { createAppSyncLink } from "aws-appsync"
 import {awsconfig} from '../aws-exports';
 
-export function buildGraphqlClient(opts) {
+export function buildGraphqlClient(opts: {
+  history: History<any>;
+  fetch?: any;
+  uri?: string;
+  prefixLink?: ApolloLink;
+}): ApolloClient<NormalizedCacheObject> {
   const { history, fetch, uri, prefixLink } = {
     uri: "/graphql",
     ...opts,
@@ -25,15 +32,15 @@ export function buildGraphqlClient(opts) {
   });
   
   const awsLink = createAppSyncLink({
-    url: awsconfig.appsync_url,
-    region: awsconfig.appsync_region,
     auth: {
-      type: awsconfig.appsync_auth_type,
-      credentials: () => Auth.currentCredentials(),
+      credentials: () => Auth.currentCredentials() as any,
       jwtToken: async () =>
-        (await Auth.currentSession()).getAccessToken().getJwtToken()
+        (await Auth.currentSession()).getAccessToken().getJwtToken(),
+      type: awsconfig.appsync_auth_type as any,
     },
-    complexObjectsCredentials: () => Auth.currentCredentials()
+    complexObjectsCredentials: () => Auth.currentCredentials(),
+    region: awsconfig.appsync_region,
+    url: awsconfig.appsync_url,
    })
 
    
@@ -43,22 +50,22 @@ export function buildGraphqlClient(opts) {
    awsLink, 
    httpLink,
     new BatchHttpLink({
-      uri: uri,
       batchInterval: 10,
       credentials: "same-origin",
       fetch,
+      uri,
     }),
   ];
   const link = ApolloLink.from(links);
   const client = new ApolloClient({
-    cache: cache,
-    link,
+    cache,
     defaultOptions: {
       watchQuery: {
         // this governs the default fetch policy for react-apollo useQuery():
         fetchPolicy: "cache-and-network",
       },
     },
+    link,
     // resolvers: ClientSideResolvers as any,
   });
 
