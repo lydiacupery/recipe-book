@@ -14,5 +14,5 @@
     "sourceMap": true,
     "strict": true
   },
-  "exclude": ["./dist", "./es", "**/*-type-test.ts"]
+  "exclude": ["node_modules","./dist", "./es", "**/*-type-test.ts"]
 }
